@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PulseFeed Receipts</title>
+<meta name="description" content="Every coin @aqualanga posted about, the market cap when we posted and where it is now. No calls, hits and misses on the same page.">
+<meta property="og:title" content="PulseFeed Receipts">
+<meta property="og:description" content="Every coin we posted about, cap then vs now. Hits and misses.">
+<meta property="og:image" content="/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2305070b'/%3E%3Ctext x='6' y='22' font-family='monospace' font-size='16' fill='%233b9dff'%3E%3E_%3C/text%3E%3C/svg%3E">
+<style>
+@font-face{font-family:'JB';font-weight:100 800;font-display:swap;src:url(/fonts/jbmono.woff2) format('woff2')}
+@font-face{font-family:'Chakra';font-weight:700;font-display:swap;src:url(/fonts/chakra-700.woff2) format('woff2')}
+:root{--bg:#05070b;--panel:#0b111a;--line:#ffffff14;--text:#e8edf2;--muted:#8b95a3;--dim:#5d6876;--brand:#3b9dff;--up:#16c784;--down:#ff5b5b;--amb:#f5b942}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:'JB',ui-monospace,monospace;font-size:16px;line-height:1.5;min-height:100vh;
+  background:radial-gradient(900px 500px at 80% -10%,#3b9dff18,transparent 70%),var(--bg)}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1080px;margin:0 auto;padding:40px 16px 56px}
+h1{font-family:'Chakra',sans-serif;font-size:clamp(30px,6vw,48px);line-height:1.08;letter-spacing:.3px}
+h1 span{color:var(--brand)}
+.lead{color:var(--muted);margin-top:14px;max-width:640px}
+.stats{display:flex;flex-wrap:wrap;gap:10px 28px;margin:26px 0 18px;color:var(--muted);font-size:14px;letter-spacing:1px;text-transform:uppercase}
+.stats b{color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
+.term{background:#0b111acc;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 30px 80px #0009}
+.bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.dot{width:11px;height:11px;border-radius:50%}
+.bar .t{margin-left:10px;color:#6b7684;font-size:14px}
+.bar .sort{margin-left:auto;display:flex;gap:6px}
+.bar button{font:inherit;font-size:13px;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;min-height:32px}
+.bar button[aria-pressed=true]{color:var(--brand);border-color:#3b9dff66}
+.cmd{padding:16px 18px 6px;color:var(--brand)}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th{font-weight:500;color:var(--dim);font-size:13px;text-align:right;padding:10px 18px;letter-spacing:.5px}
+th:first-child,td:first-child{text-align:left}
+td{padding:12px 18px;border-top:1px solid var(--line);text-align:right;white-space:nowrap}
+tr:hover td{background:#ffffff05}
+.tk{font-weight:700}
+.tk a:hover{color:var(--brand)}
+.ch{color:var(--dim);font-size:13px;margin-left:8px;font-weight:400}
+.up{color:var(--up)}.down{color:var(--down)}.gone{color:var(--dim)}
+.post a{color:var(--muted);border-bottom:1px dotted var(--dim)}
+.post a:hover{color:var(--text)}
+.empty{padding:28px 18px;color:var(--muted)}
+.foot{margin-top:22px;color:var(--dim);font-size:13px;display:flex;flex-wrap:wrap;gap:6px 18px}
+.foot a{color:var(--muted)}
+.foot a:hover{color:var(--brand)}
+/* телефон: строки таблицы превращаются в карточки, ничего не уезжает вбок */
+@media (max-width:720px){
+  .wrap{padding-top:28px}
+  thead{display:none}
+  table,tbody,tr,td{display:block;width:100%}
+  tr{border-top:1px solid var(--line);padding:12px 16px;display:grid;grid-template-columns:1fr auto;gap:2px 12px}
+  td{border:0;padding:0;text-align:left;white-space:normal}
+  td.tk{grid-column:1}
+  td.chg{grid-column:2;grid-row:1;text-align:right;font-weight:700}
+  td.caps{grid-column:1/3;color:var(--muted);font-size:14px}
+  td.post{grid-column:1/3;font-size:14px}
+  td.hide-m{display:none}
+  .bar .sort{display:none}
+}
+@media (min-width:721px){td.caps{display:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>every coin we posted.<br><span>where it went after.</span></h1>
+  <p class="lead">No calls, no labels. The market cap when our first post went out, and the cap right now. Hits and misses on the same page, updated hourly.</p>
+  <div class="stats" id="stats">loading...</div>
+  <section class="term">
+    <div class="bar">
+      <span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span>
+      <span class="t">pulsefeed / receipts</span>
+      <div class="sort">
+        <button data-sort="chg" aria-pressed="true">since post</button>
+        <button data-sort="new" aria-pressed="false">newest</button>
+      </div>
+    </div>
+    <div class="cmd">$ pulsefeed --receipts</div>
+    <table>
+      <thead><tr><th>coin</th><th>posted</th><th>cap then</th><th>cap now</th><th>change</th><th>our post</th></tr></thead>
+      <tbody id="rows"><tr><td class="empty" colspan="6">loading...</td></tr></tbody>
+    </table>
+  </section>
+  <div class="foot">
+    <span>signals by PulseFeed, takes by <a href="https://x.com/aqualanga">@aqualanga</a></span>
+    <span>caps from DexScreener</span>
+    <span>not financial advice</span>
+  </div>
+</main>
+<script>
+const SRC = 'https://gist.githubusercontent.com/aqualang89/d6d13fe1e5fe51521be2d6897a3be84d/raw/board.json';
+let data = null, sort = 'chg';
+
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const usd = (n) => n == null ? '-' : n >= 1e9 ? '$' + (n / 1e9).toFixed(2) + 'b' : n >= 1e6 ? '$' + (n / 1e6).toFixed(1) + 'm' : '$' + Math.round(n / 1e3) + 'k';
+const day = (t) => new Date(t).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+const ago = (t) => { const m = Math.round((Date.now() - t) / 60000); return m < 60 ? m + ' min ago' : Math.round(m / 60) + 'h ago'; };
+const chain = (c) => c === 'robinhood' ? 'robinhood' : c;
+
+function render() {
+  const rows = [...data.coins].sort((a, b) => sort === 'new' ? b.firstT - a.firstT : (b.chg ?? -Infinity) - (a.chg ?? -Infinity));
+  const live = data.coins.filter((c) => c.nowMc != null);
+  const up = live.filter((c) => c.chg > 0).length;
+  document.getElementById('stats').innerHTML =
+    `<span>coins <b>${data.coins.length}</b></span><span>still trading <b>${live.length}</b></span>` +
+    `<span>above our post <b class="up">${up}</b></span><span>below <b class="down">${live.length - up}</b></span>` +
+    `<span>no pool <b>${data.coins.length - live.length}</b></span><span>updated <b>${data.updated ? ago(data.updated) : '-'}</b></span>`;
+  if (!rows.length) {
+    document.getElementById('rows').innerHTML = '<tr><td class="empty" colspan="6">the ledger is warming up. first rows land within the hour.</td></tr>';
+    return;
+  }
+  document.getElementById('rows').innerHTML = rows.map((c) => {
+    const cls = c.chg == null ? 'gone' : c.chg >= 0 ? 'up' : 'down';
+    const chg = c.chg == null ? 'no pool' : (c.chg >= 0 ? '+' : '') + (Math.abs(c.chg) >= 1000 ? Math.round(c.chg).toLocaleString('en-US') : c.chg.toFixed(0)) + '%';
+    const dex = `https://dexscreener.com/${encodeURIComponent(c.chain)}/${encodeURIComponent(c.token)}`;
+    return `<tr>
+      <td class="tk"><a href="${dex}" target="_blank" rel="noopener">$${esc(c.ticker)}</a><span class="ch">${esc(chain(c.chain))}</span></td>
+      <td class="hide-m">${day(c.firstT)}</td>
+      <td class="hide-m">${usd(c.firstMc)}</td>
+      <td class="hide-m">${usd(c.nowMc)}</td>
+      <td class="chg ${cls}">${chg}</td>
+      <td class="caps">${day(c.firstT)} · ${usd(c.firstMc)} → ${usd(c.nowMc)}</td>
+      <td class="post"><a href="https://x.com/aqualanga/status/${esc(c.tweet)}" target="_blank" rel="noopener">${c.posts > 1 ? c.posts + ' posts' : 'post'}${c.views ? ' · ' + c.views.toLocaleString('en-US') + ' views' : ''}</a></td>
+    </tr>`;
+  }).join('');
+}
+
+document.querySelectorAll('.sort button').forEach((b) => b.addEventListener('click', () => {
+  sort = b.dataset.sort;
+  document.querySelectorAll('.sort button').forEach((x) => x.setAttribute('aria-pressed', x === b));
+  if (data) render();
+}));
+
+fetch(SRC, { cache: 'no-store' }).then((r) => r.json()).then((j) => { data = j; render(); })
+  .catch(() => { document.getElementById('rows').innerHTML = '<tr><td class="empty" colspan="6">could not load the ledger, try again in a minute.</td></tr>'; document.getElementById('stats').textContent = ''; });
+</script>
+</body>
+</html>
