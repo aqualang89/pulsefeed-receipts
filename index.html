@@ -96,26 +96,29 @@ const SRC = 'https://gist.githubusercontent.com/aqualang89/d6d13fe1e5fe51521be2d
 let data = null, sort = 'chg';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const usd = (n) => n == null ? '-' : n >= 1e9 ? '$' + (n / 1e9).toFixed(2) + 'b' : n >= 1e6 ? '$' + (n / 1e6).toFixed(1) + 'm' : '$' + Math.round(n / 1e3) + 'k';
+const usd = (n) => n == null ? '-' : n >= 1e9 ? '$' + (n / 1e9).toFixed(2) + 'b' : n >= 1e6 ? '$' + (n / 1e6).toFixed(1) + 'm' : n >= 1e3 ? '$' + Math.round(n / 1e3) + 'k' : '$' + Math.round(n);
 const day = (t) => new Date(t).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 const ago = (t) => { const m = Math.round((Date.now() - t) / 60000); return m < 60 ? m + ' min ago' : Math.round(m / 60) + 'h ago'; };
 const chain = (c) => c === 'robinhood' ? 'robinhood' : c;
 
 function render() {
   const rows = [...data.coins].sort((a, b) => sort === 'new' ? b.firstT - a.firstT : (b.chg ?? -Infinity) - (a.chg ?? -Infinity));
-  const live = data.coins.filter((c) => c.nowMc != null);
-  const up = live.filter((c) => c.chg > 0).length;
+  // drained = the pool still exists but someone pulled the liquidity: it has a price and it counts as below
+  const priced = data.coins.filter((c) => c.nowMc != null);
+  const drained = priced.filter((c) => c.drained).length;
+  const up = priced.filter((c) => c.chg > 0).length;
   document.getElementById('stats').innerHTML =
-    `<span>coins <b>${data.coins.length}</b></span><span>still trading <b>${live.length}</b></span>` +
-    `<span>above our post <b class="up">${up}</b></span><span>below <b class="down">${live.length - up}</b></span>` +
-    `<span>no pool <b>${data.coins.length - live.length}</b></span><span>updated <b>${data.updated ? ago(data.updated) : '-'}</b></span>`;
+    `<span>coins <b>${data.coins.length}</b></span><span>still trading <b>${priced.length - drained}</b></span>` +
+    `<span>above our post <b class="up">${up}</b></span><span>below <b class="down">${priced.length - up}</b></span>` +
+    (drained ? `<span>drained <b class="down">${drained}</b></span>` : '') +
+    `<span>no pool <b>${data.coins.length - priced.length}</b></span><span>updated <b>${data.updated ? ago(data.updated) : '-'}</b></span>`;
   if (!rows.length) {
     document.getElementById('rows').innerHTML = '<tr><td class="empty" colspan="6">the ledger is warming up. first rows land within the hour.</td></tr>';
     return;
   }
   document.getElementById('rows').innerHTML = rows.map((c) => {
     const cls = c.chg == null ? 'gone' : c.chg >= 0 ? 'up' : 'down';
-    const chg = c.chg == null ? 'no pool' : (c.chg >= 0 ? '+' : '') + (Math.abs(c.chg) >= 1000 ? Math.round(c.chg).toLocaleString('en-US') : c.chg.toFixed(0)) + '%';
+    const chg = c.chg == null ? 'no pool' : (c.chg >= 0 ? '+' : '') + (Math.abs(c.chg) >= 1000 ? Math.round(c.chg).toLocaleString('en-US') : c.chg.toFixed(0)) + '%' + (c.drained ? ' drained' : '');
     const dex = `https://dexscreener.com/${encodeURIComponent(c.chain)}/${encodeURIComponent(c.token)}`;
     return `<tr>
       <td class="tk"><a href="${dex}" target="_blank" rel="noopener">$${esc(c.ticker)}</a><span class="ch">${esc(chain(c.chain))}</span></td>
